@@ -5,7 +5,7 @@ from timerr import * # It gave errors when I named the class timer, so I renamed
 #from sprites import *
 
 class Player(pygame.sprite.Sprite):
-  def __init__(self, pos, group, collision_sprites, tree_sprites):
+  def __init__(self, pos, group, collision_sprites, tree_sprites, interaction):
     super().__init__(group) #as soon as an instance of this class is created, it will automatically be added to the group that is passed in as an argument
 
     self.import_assets() # must be at the top of the init method so that the animations are imported before the image is set
@@ -57,6 +57,8 @@ class Player(pygame.sprite.Sprite):
 
    # interaction
     self.tree_sprites = tree_sprites
+    self.interaction = interaction
+    self.sleep = False
     
    
 
@@ -96,7 +98,7 @@ class Player(pygame.sprite.Sprite):
 
   def input(self):
     keys = pygame.key.get_pressed()
-    if not self.timers['tool use'].active: # if the tool use timer is not active, then the player can move
+    if not self.timers['tool use'].active and not self.sleep: # if the tool use timer is not active, then the player can move
       # directions
       if keys[pygame.K_UP]:
          self.direction.y = -1
@@ -148,6 +150,16 @@ class Player(pygame.sprite.Sprite):
         # print(self.seed_index)
          self.selected_seed = self.seeds[self.seed_index]   
         # print(self.selected_seed)
+        
+       # sleep function
+      if keys[pygame.K_RETURN]:
+         collided_interaction_sprite = pygame.sprite.spritecollide(self, self.interaction, False)
+         if collided_interaction_sprite:
+            if collided_interaction_sprite[0].name == 'Trader':
+               pass
+            else:
+               self.status = 'left_idle'
+               self.sleep = 'True'
 
   def get_status(self):
 
