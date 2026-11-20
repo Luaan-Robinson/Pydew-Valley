@@ -7,12 +7,14 @@ from pytmx.util_pygame import load_pygame
 from support import *
 from transition import Transition
 from soil import SoilLayer
+from sky import Rain
+from random import randint
 
 class Level:
   def __init__(self):
 
-		# gets the display surface
-    self.display_surface = pygame.display.get_surface() 
+	# gets the display surface
+    self.display_surface = pygame.display.get_surface()   
 
 		# sprite groups
     self.all_sprites = CameraGroup()
@@ -25,7 +27,16 @@ class Level:
     self.overlay = Overlay(self.player)
     self.transition = Transition(self.reset, self.player)
 
-    
+
+    # sky
+    self.rain = Rain(self.all_sprites)
+    self.raining = randint(0,10) > 3
+    self.soil_layer.raining = self.raining
+
+# cloud overlay
+    self.cloud_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    self.cloud_surf.fill((40, 50, 70))
+    self.cloud_surf.set_alpha(70)    
 
   def setup(self):
        tmx_data = load_pygame('./data/map.tmx')
@@ -88,6 +99,10 @@ class Level:
   def reset(self):
      #soil
      self.soil_layer.remove_water()
+     self.raining = randint(0,10) > 3
+     self.soil_layer.raining = self.raining
+     if self.raining:
+        self.soil_layer.water_all()
      
      # apples on the trees
      for tree in self.tree_sprites.sprites():
@@ -104,6 +119,12 @@ class Level:
     self.all_sprites.custom_draw(self.player)
     self.all_sprites.update(dt)
 
+    # rain
+    if self.raining:
+       self.display_surface.blit(self.cloud_surf, (0, 0))
+       self.rain.update() 
+
+    # transition overlay
     self.overlay.display()
 
     if self.player.sleep:
