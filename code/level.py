@@ -86,6 +86,9 @@ class Level:
           z = LAYERS['ground'])
        
   def reset(self):
+     #soil
+     self.soil_layer.remove_water()
+     
      # apples on the trees
      for tree in self.tree_sprites.sprites():
         for apple in tree.apple_sprites.sprites():
