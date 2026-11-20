@@ -5,7 +5,7 @@ from timerr import * # It gave errors when I named the class timer, so I renamed
 #from sprites import *
 
 class Player(pygame.sprite.Sprite):
-  def __init__(self, pos, group, collision_sprites, tree_sprites, interaction):
+  def __init__(self, pos, group, collision_sprites, tree_sprites, interaction, soil_layer):
     super().__init__(group) #as soon as an instance of this class is created, it will automatically be added to the group that is passed in as an argument
 
     self.import_assets() # must be at the top of the init method so that the animations are imported before the image is set
@@ -59,13 +59,14 @@ class Player(pygame.sprite.Sprite):
     self.tree_sprites = tree_sprites
     self.interaction = interaction
     self.sleep = False
+    self.soil_layer = soil_layer
     
    
 
   def use_tool(self):
-     print('tool use')
      if self.selected_tool == 'hoe':
-        pass
+        self.soil_layer.get_hit(self.target_pos)
+        
      if self.selected_tool == 'axe':
         for tree in self.tree_sprites.sprites():
            if tree.rect.collidepoint(self.target_pos):
